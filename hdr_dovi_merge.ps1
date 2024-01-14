@@ -11,7 +11,7 @@ try {
         Write-Host -ForegroundColor red "DoVi video is not Dolby Vision!"
         exit
     }
-    if (-Not ($hdr_format_hdr10.contains("HDR10") -or $hdr_format_hdr10.contains("2086"))) {
+    if (-Not ($hdr_format_hdr10.contains("HDR10") -or $hdr_format_hdr10.contains("2086") -or $hdr_format.contains("2094"))) {
         Write-Host -ForegroundColor red "HDR10 video is not HDR10 or HDR10+!"
         exit
     }
