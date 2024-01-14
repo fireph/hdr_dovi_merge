@@ -4,6 +4,18 @@ try {
 
     Write-Host "Checking frame counts..."
 
+    $hdr_format_dovi = mediainfo --Output="Video;%HDR_Format%" $dovi
+    $hdr_format_hdr10 = mediainfo --Output="Video;%HDR_Format%" $hdr10
+
+    if (-Not ($hdr_format_dovi.contains("Dolby Vision"))) {
+        Write-Host -ForegroundColor red "DoVi video is not Dolby Vision!"
+        exit
+    }
+    if (-Not ($hdr_format_hdr10.contains("HDR10") -or $hdr_format_hdr10.contains("2086"))) {
+        Write-Host -ForegroundColor red "HDR10 video is not HDR10 or HDR10+!"
+        exit
+    }
+
     $dovi_frame_count = mediainfo --Output="Video;%FrameCount%" $dovi
     $hdr10_frame_count = mediainfo --Output="Video;%FrameCount%" $hdr10
 
@@ -32,8 +44,8 @@ try {
     $framerate = ffprobe -v error -select_streams v -of default=noprint_wrappers=1:nokey=1 -show_entries stream=r_frame_rate $hdr10
     Write-Host "Using framerate of ${framerate}p"
 
-    Write-Host "Merging..."
-    mkvmerge -o $out --default-duration "0:${framerate}p" HDR10_DV.hevc -D $hdr10
+    Write-Host "Merging DoVi/HDR video with original HDR10 file..."
+    mkvmerge -q -o $out --default-duration "0:${framerate}p" HDR10_DV.hevc -D $hdr10
 
 } finally {
     # Remove working files
