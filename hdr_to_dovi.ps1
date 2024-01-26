@@ -73,7 +73,12 @@ try {
     Add-Content extra.json $extraJson
 
     Write-Host "Converting HDR10+ metadata to DoVi RPU data..."
-    dovi_tool generate -j extra.json --hdr10plus-json metadata.json --rpu-out RPUPlus.bin
+    if (Test-Path metadata.json) {
+        dovi_tool generate -j extra.json --hdr10plus-json metadata.json --rpu-out RPUPlus.bin
+    } else {
+        Write-Host "No HDR10+ metadata, but generating DoVi RPU data anyway..."
+        dovi_tool generate -j extra.json --rpu-out RPUPlus.bin
+    }
 
     Write-Host "Injecting DoVi RPU into HDR10..."
     dovi_tool inject-rpu --input HDR10.hevc --rpu-in RPUPlus.bin -o HDR10_DV.hevc
